@@ -5,18 +5,27 @@ import {
   Text,
   View,
   Platform,
+  TouchableOpacity,
 } from "react-native";
+import AppLoading from "expo-app-loading";
 import { Appbar } from "react-native-paper";
 import {
   useFonts,
   Poppins_600SemiBold,
   Poppins_400Regular,
+  Poppins_900Black,
 } from "@expo-google-fonts/poppins";
 import * as Font from "expo-font";
 import { TextInput } from "react-native-paper";
 import { Button } from "react-native-paper";
 
 const Login = ({ navigation }) => {
+  let [fontsLoaded] = useFonts({
+    Poppins_400Regular,
+    Poppins_600SemiBold,
+    Poppins_900Black,
+  });
+
   const initialState = { email: "", password: "" };
   const [formData, setData] = useState(initialState);
   const handleChangeEmail = (e) => {
@@ -31,17 +40,13 @@ const Login = ({ navigation }) => {
       password: e,
     });
   };
-  const fetchFonts = async () =>
-    await Font.loadAsync({
-      Poppins_600: Poppins_600SemiBold,
-      Poppins_400: Poppins_400Regular,
-    });
+
   const handleSubmit = () => {
     navigation.navigate("BottomTab");
   };
-  useEffect(() => {
-    fetchFonts();
-  });
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  }
   return (
     <View style={styles.container}>
       <View style={styles.paper}>
@@ -54,19 +59,10 @@ const Login = ({ navigation }) => {
           </Appbar.Header>
         </View>
         <View style={styles.textContainer}>
+          <Text style={styles.welcomeText}> Welcome </Text>
           <Text
             style={{
-              fontFamily: "Poppins_600",
-              fontSize: 40,
-              color: "#111",
-            }}
-          >
-            {" "}
-            Welcome{" "}
-          </Text>
-          <Text
-            style={{
-              fontFamily: "Poppins_600",
+              fontFamily: "Poppins_600SemiBold",
               fontSize: 40,
               color: "#111",
             }}
@@ -83,7 +79,7 @@ const Login = ({ navigation }) => {
           <View>
             <Text
               style={{
-                fontFamily: "Poppins_400",
+                fontFamily: "Poppins_400Regular",
                 color: "#111",
               }}
             >
@@ -102,7 +98,7 @@ const Login = ({ navigation }) => {
           <View>
             <Text
               style={{
-                fontFamily: "Poppins_400",
+                fontFamily: "Poppins_400Regular",
                 color: "#111",
               }}
             >
@@ -120,7 +116,7 @@ const Login = ({ navigation }) => {
         </KeyboardAvoidingView>
 
         <View style={styles.button}>
-          <Button
+          <TouchableOpacity
             mode="contained"
             uppercase={false}
             onPress={handleSubmit}
@@ -129,14 +125,19 @@ const Login = ({ navigation }) => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontFamily: "Poppins_600",
-              fontSize: 15,
-              color: "#fff",
               backgroundColor: "#FF7A00",
             }}
           >
-            Log In
-          </Button>
+            <Text
+              style={{
+                fontFamily: "Poppins_600SemiBold",
+                fontSize: 18,
+                color: "#fff",
+              }}
+            >
+              Log In
+            </Text>
+          </TouchableOpacity>
           <View
             style={{
               display: "flex",
@@ -152,7 +153,7 @@ const Login = ({ navigation }) => {
           >
             <Text
               style={{
-                fontFamily: "Poppins_600",
+                fontFamily: "Poppins_600SemiBold",
                 fontSize: 15,
                 color: "#111",
               }}
@@ -166,7 +167,7 @@ const Login = ({ navigation }) => {
               onPress={() => navigation.navigate("Signup")}
               color="#FF7A00"
               style={{
-                fontFamily: "Poppins_600",
+                fontFamily: "Poppins_600SemiBold",
               }}
             >
               Sign Up
@@ -195,7 +196,11 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "space-evenly",
   },
-
+  welcomeText: {
+    fontFamily: "Poppins_600SemiBold",
+    fontSize: 40,
+    color: "#111",
+  },
   header: {
     width: "100%",
   },

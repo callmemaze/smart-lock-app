@@ -1,25 +1,22 @@
 import React, { useEffect } from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
 import { Appbar, Card } from "react-native-paper";
-import {
-  useFonts,
-  Poppins_600SemiBold,
-  Poppins_700Bold,
-  Poppins_400Regular,
-} from "@expo-google-fonts/poppins";
-import * as Font from "expo-font";
 import { Icon } from "react-native-elements";
 
 const Home = () => {
-  const fetchFonts = async () =>
-    await Font.loadAsync({
-      Poppins_700: Poppins_700Bold,
-      Poppins_600: Poppins_600SemiBold,
-      Poppins_400: Poppins_400Regular,
+  const handleSubmitDoor = () => {
+    fetch("http://127.0.0.1:5000/unlock", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        openDoor: true,
+        user: "test",
+      }),
     });
-  useEffect(() => {
-    fetchFonts();
-  });
+  };
   return (
     <View style={styles.container}>
       <Appbar.Header
@@ -36,7 +33,11 @@ const Home = () => {
           style={{ width: 50, height: 50 }}
         />
         <Text
-          style={{ fontFamily: "Poppins_700", marginLeft: 8, fontSize: 15 }}
+          style={{
+            fontFamily: "Poppins_700Bold",
+            marginLeft: 8,
+            fontSize: 15,
+          }}
         >
           {" "}
           Smart Lock{" "}
@@ -44,10 +45,12 @@ const Home = () => {
       </Appbar.Header>
       <View style={styles.paper}>
         <View style={styles.welcome}>
-          <Text style={{ fontFamily: "Poppins_700", fontSize: 30 }}>
+          <Text style={{ fontFamily: "Poppins_600SemiBold", fontSize: 30 }}>
             Welcome
           </Text>
-          <Text style={{ fontFamily: "Poppins_700", fontSize: 30 }}>User</Text>
+          <Text style={{ fontFamily: "Poppins_600SemiBold", fontSize: 30 }}>
+            User
+          </Text>
         </View>
         <View style={styles.boxContainer}>
           <Card style={styles.box} onPress={() => console.log("pressed")}>
@@ -58,7 +61,7 @@ const Home = () => {
                 color="#517fa4"
                 size={40}
               />
-              <Text style={{ fontFamily: "Poppins_600", fontSize: 18 }}>
+              <Text style={{ fontFamily: "Poppins_600SemiBold", fontSize: 18 }}>
                 {" "}
                 Show Qr Code{" "}
               </Text>
@@ -72,13 +75,13 @@ const Home = () => {
                 color="#517fa4"
                 size={40}
               />
-              <Text style={{ fontFamily: "Poppins_600", fontSize: 18 }}>
+              <Text style={{ fontFamily: "Poppins_600SemiBold", fontSize: 18 }}>
                 {" "}
                 Open Door
               </Text>
             </View>
           </Card>
-          <Card style={styles.box}>
+          <Card style={styles.box} onPress={handleSubmitDoor}>
             <View style={styles.content}>
               <Icon
                 name="door-closed"
@@ -86,7 +89,7 @@ const Home = () => {
                 color="#517fa4"
                 size={40}
               />
-              <Text style={{ fontFamily: "Poppins_600", fontSize: 18 }}>
+              <Text style={{ fontFamily: "Poppins_600SemiBold", fontSize: 18 }}>
                 {" "}
                 Open Door
               </Text>

@@ -1,11 +1,31 @@
+import { useEffect, useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AuthNavigation from "./src/navigation/AuthNavigation";
 import BottomTab from "./src/container/BottomTab";
+import * as Font from "expo-font";
+import {
+  useFonts,
+  Poppins_600SemiBold,
+  Poppins_400Regular,
+  Poppins_900Black,
+  Poppins_700Bold,
+} from "@expo-google-fonts/poppins";
+import AppLoading from "expo-app-loading";
 const Stack = createNativeStackNavigator();
+
 export default function App() {
+  let [fontsLoaded] = useFonts({
+    Poppins_400Regular,
+    Poppins_600SemiBold,
+    Poppins_700Bold,
+    Poppins_900Black,
+  });
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  }
   return (
     <NavigationContainer>
       <StatusBar barStyle="dark-content" animated={true} />
