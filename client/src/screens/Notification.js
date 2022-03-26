@@ -7,24 +7,74 @@ import {
   Image,
   FlatList,
   RefreshControl,
+  TouchableOpacity,
 } from "react-native";
-import {
-  useFonts,
-  Poppins_600SemiBold,
-  Poppins_700Bold,
-  Poppins_400Regular,
-} from "@expo-google-fonts/poppins";
-import * as Font from "expo-font";
+import { Card, Title, Paragraph } from "react-native-paper";
 import AppBar from "../components/AppBar";
+import { Icon } from "react-native-elements";
 
 const ListItem = ({ item }) => {
-  console.log("item");
-  return (
-    <View style={styles.listItem}>
-      <Text style={styles.text}>{item.id}</Text>
-      <Text style={styles.text}>{item.message}</Text>
-    </View>
-  );
+  const handleSubmitAccess = () => {
+    console.log("pressed");
+  };
+  <View style={styles.cardContainer} key={item._id.$oid}>
+    <Card style={styles.card}>
+      <Card.Content
+        style={{
+          backgroundColor: "#318dff",
+          borderTopLeftRadius: 25,
+          borderTopRightRadius: 25,
+        }}
+      >
+        <Paragraph style={{ fontFamily: "Poppins_600SemiBold" }}>
+          Door Access Request
+        </Paragraph>
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <Icon
+            name="clock-time-three"
+            type="material-community"
+            color="#fff"
+          />
+          <Title
+            style={{
+              fontFamily: "Poppins_600SemiBold",
+              marginLeft: 7,
+              color: "#fff",
+            }}
+          >
+            12 P.M 2022
+          </Title>
+        </View>
+      </Card.Content>
+      <Card.Cover
+        style={{ margin: 10, height: 200, borderRadius: 10 }}
+        source={{ uri: "https://picsum.photos/700" }}
+      />
+      <Card.Actions
+        style={{
+          justifyContent: "space-around",
+          alignItems: "center",
+
+          backgroundColor: "#318dff",
+          borderBottomLeftRadius: 25,
+          borderBottomRightRadius: 25,
+        }}
+      >
+        <TouchableOpacity style={{ margin: 5 }} onPress={handleSubmitAccess}>
+          <Text style={styles.text}>Access</Text>
+        </TouchableOpacity>
+        <TouchableOpacity>
+          <Text style={styles.text}>Cancel</Text>
+        </TouchableOpacity>
+      </Card.Actions>
+    </Card>
+  </View>;
 };
 
 const Notification = () => {
@@ -71,6 +121,7 @@ const Notification = () => {
           style={{ width: 200, height: 200 }}
         ></Image> 
       </View>*/}
+
       {data?.length === 0 || null ? (
         <ScrollView
           style={{ height: "100%" }}
@@ -136,5 +187,25 @@ const styles = StyleSheet.create({
   noNotificationImage: {
     width: "100%",
     height: 200,
+  },
+  noHistoryText: {
+    margin: 30,
+    fontFamily: "Poppins_600SemiBold",
+    fontSize: 20,
+  },
+  cardContainer: {
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
+  },
+  card: {
+    width: "85%",
+    borderRadius: 25,
+  },
+  text: {
+    fontFamily: "Poppins_600SemiBold",
+    fontSize: 15,
+    color: "#fff",
   },
 });
