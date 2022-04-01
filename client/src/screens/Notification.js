@@ -9,6 +9,7 @@ import {
   RefreshControl,
   TouchableOpacity,
 } from "react-native";
+import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Card, Title, Paragraph } from "react-native-paper";
 import AppBar from "../components/AppBar";
 import { Icon } from "react-native-elements";
@@ -17,64 +18,95 @@ const ListItem = ({ item }) => {
   const handleSubmitAccess = () => {
     console.log("pressed");
   };
-  <View style={styles.cardContainer} key={item._id.$oid}>
-    <Card style={styles.card}>
-      <Card.Content
+  const closeRow = (index) => {
+    console.log("closerow");
+    if (prevOpenedRow && prevOpenedRow !== row[index]) {
+      prevOpenedRow.close();
+    }
+    prevOpenedRow = row[index];
+  };
+
+  const renderRightActions = (progress, dragX, onClick) => {
+    return (
+      <View
         style={{
-          backgroundColor: "#318dff",
-          borderTopLeftRadius: 25,
-          borderTopRightRadius: 25,
+          margin: 0,
+          alignContent: "center",
+          justifyContent: "center",
+          width: 70,
         }}
       >
-        <Paragraph style={{ fontFamily: "Poppins_600SemiBold" }}>
-          Door Access Request
-        </Paragraph>
-        <View
+        <Button color="red" onPress={onClick} title="DELETE"></Button>
+      </View>
+    );
+  };
+  <Swipeable
+    renderRightActions={(progress, dragX) =>
+      renderRightActions(progress, dragX, onClick)
+    }
+    onSwipeableOpen={() => closeRow(index)}
+    ref={(ref) => (row[index] = ref)}
+    rightOpenValue={-100}
+  >
+    <View style={styles.cardContainer} key={item._id.$oid}>
+      <Card style={styles.card}>
+        <Card.Content
           style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
+            backgroundColor: "#318dff",
+            borderTopLeftRadius: 25,
+            borderTopRightRadius: 25,
           }}
         >
-          <Icon
-            name="clock-time-three"
-            type="material-community"
-            color="#fff"
-          />
-          <Title
+          <Paragraph style={{ fontFamily: "Poppins_600SemiBold" }}>
+            Door Access Request
+          </Paragraph>
+          <View
             style={{
-              fontFamily: "Poppins_600SemiBold",
-              marginLeft: 7,
-              color: "#fff",
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
             }}
           >
-            12 P.M 2022
-          </Title>
-        </View>
-      </Card.Content>
-      <Card.Cover
-        style={{ margin: 10, height: 200, borderRadius: 10 }}
-        source={{ uri: "https://picsum.photos/700" }}
-      />
-      <Card.Actions
-        style={{
-          justifyContent: "space-around",
-          alignItems: "center",
+            <Icon
+              name="clock-time-three"
+              type="material-community"
+              color="#fff"
+            />
+            <Title
+              style={{
+                fontFamily: "Poppins_600SemiBold",
+                marginLeft: 7,
+                color: "#fff",
+              }}
+            >
+              12 P.M 2022
+            </Title>
+          </View>
+        </Card.Content>
+        <Card.Cover
+          style={{ margin: 10, height: 200, borderRadius: 10 }}
+          source={{ uri: "https://picsum.photos/700" }}
+        />
+        <Card.Actions
+          style={{
+            justifyContent: "space-around",
+            alignItems: "center",
 
-          backgroundColor: "#318dff",
-          borderBottomLeftRadius: 25,
-          borderBottomRightRadius: 25,
-        }}
-      >
-        <TouchableOpacity style={{ margin: 5 }} onPress={handleSubmitAccess}>
-          <Text style={styles.text}>Access</Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={styles.text}>Cancel</Text>
-        </TouchableOpacity>
-      </Card.Actions>
-    </Card>
-  </View>;
+            backgroundColor: "#318dff",
+            borderBottomLeftRadius: 25,
+            borderBottomRightRadius: 25,
+          }}
+        >
+          <TouchableOpacity style={{ margin: 5 }} onPress={handleSubmitAccess}>
+            <Text style={styles.text}>Access</Text>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Text style={styles.text}>Cancel</Text>
+          </TouchableOpacity>
+        </Card.Actions>
+      </Card>
+    </View>
+  </Swipeable>;
 };
 
 const Notification = () => {
@@ -102,8 +134,12 @@ const Notification = () => {
     })
       .then((res) => res.json())
       .then((alerts) => {
-        setData(alerts);
-        setLoading(false);
+        if (alerts || alerts.length !== 0) {
+          setData(alerts);
+          setLoading(false);
+        } else {
+          setLoading(false);
+        }
       })
       .catch((error) => {
         console.log(error);
@@ -122,7 +158,7 @@ const Notification = () => {
         ></Image> 
       </View>*/}
 
-      {data?.length === 0 || null ? (
+      {data?.length === 0 || !data ? (
         <ScrollView
           style={{ height: "100%" }}
           refreshControl={
@@ -186,7 +222,7 @@ const styles = StyleSheet.create({
   },
   noNotificationImage: {
     width: "100%",
-    height: 200,
+    height: 300,
   },
   noHistoryText: {
     margin: 30,

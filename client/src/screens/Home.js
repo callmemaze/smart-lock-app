@@ -2,6 +2,9 @@ import React, { useEffect } from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
 import { Appbar, Card } from "react-native-paper";
 import { Icon } from "react-native-elements";
+import socketIOClient from "socket.io-client";
+import io from "socket.io-client";
+const ENDPOINT = "http://127.0.0.1:5001";
 
 const Home = () => {
   const handleSubmitDoor = () => {
@@ -16,6 +19,13 @@ const Home = () => {
         user: "test",
       }),
     });
+  };
+  const click = async () => {
+    const socket = socketIOClient(ENDPOINT);
+    socket.connect();
+    const data = "hello";
+    socket.send("message", data);
+    socket.close();
   };
   return (
     <View style={styles.container}>
@@ -81,7 +91,7 @@ const Home = () => {
               </Text>
             </View>
           </Card>
-          <Card style={styles.box} onPress={handleSubmitDoor}>
+          <Card style={styles.box} onPress={click}>
             <View style={styles.content}>
               <Icon
                 name="door-closed"

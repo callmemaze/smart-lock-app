@@ -12,68 +12,116 @@ import {
 import { Card, Title, Paragraph } from "react-native-paper";
 import AppBar from "../components/AppBar";
 import { Icon } from "react-native-elements";
+import Swipeable from "react-native-gesture-handler/Swipeable";
+import Swipeout from "react-native-swipeout";
+import { useDispatch } from "react-redux";
+import { deleteHistory, getHistory } from "../actions/history";
+import { useSelector } from "react-redux";
+
 const ListItem = ({ item }) => {
-  return (
-    <View style={styles.cardContainer} key={item._id.$oid}>
-      <Card style={styles.card}>
-        <Card.Content
+  const dispatch = useDispatch();
+  const remove = (id) => {
+    let url = `http://127.0.0.1:5000/history/${id}`;
+    fetch(url, {
+      method: "DELETE",
+    })
+      .then((res) => res.json())
+      .then((alerts) => {
+        console.log(alerts);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  let swipeBtns = [
+    {
+      component: (
+        <TouchableOpacity
           style={{
-            backgroundColor: "#318dff",
-            borderTopLeftRadius: 10,
-            borderTopRightRadius: 10,
-            borderRadius: 10,
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+            width: "100%",
+            backgroundColor: "blue",
           }}
+          onPress={() => dispatch(deleteHistory(item._id.$oid))}
         >
-          <View
+          <Icon
+            name="trash-can-outline"
+            type="material-community"
+            color="red"
+            size={35}
+          />
+        </TouchableOpacity>
+      ),
+      backgroundColor: "transparent",
+    },
+  ];
+  return (
+    <Swipeout right={swipeBtns} autoClose="true">
+      <View style={styles.cardContainer} key={item._id.$oid}>
+        <Card style={styles.card}>
+          <Card.Content
             style={{
-              display: "flex",
-              flexDirection: "row",
+              backgroundColor:
+                item.status == "accepted" ? "#4BB543" : "#bb2124",
+              borderTopLeftRadius: 10,
+              borderTopRightRadius: 10,
+              borderRadius: 10,
             }}
           >
-            <Icon
-              name="clock-time-three"
-              type="material-community"
-              color="#fff"
-              size={18}
-            />
-            <Paragraph
+            <View
+              style={{
+                display: "flex",
+                flexDirection: "row",
+              }}
+            >
+              <Icon
+                name="clock-time-three"
+                type="material-community"
+                color="#fff"
+                size={18}
+              />
+              <Paragraph
+                style={{
+                  fontFamily: "Poppins_600SemiBold",
+                  marginLeft: 7,
+                  fontSize: 18,
+                  color: "#fff",
+                }}
+              >
+                {item.date}
+              </Paragraph>
+            </View>
+            <Title
               style={{
                 fontFamily: "Poppins_600SemiBold",
-                marginLeft: 7,
-                fontSize: 18,
+                fontSize: 15,
                 color: "#fff",
               }}
             >
-              12 P.M 2022
-            </Paragraph>
-          </View>
-          <Title
-            style={{
-              fontFamily: "Poppins_600SemiBold",
-              fontSize: 15,
-              color: "#fff",
-            }}
-          >
-            {item.status === "accepted"
-              ? "Door Access Request"
-              : "Unknown Door Access Request"}
-          </Title>
-          <Title
-            style={{
-              fontFamily: "Poppins_600SemiBold",
-              fontSize: 15,
-              color: "#fff",
-            }}
-          >
-            Requested By {item.message}
-          </Title>
-        </Card.Content>
-      </Card>
-    </View>
+              {item.status === "accepted"
+                ? "Door Access Request"
+                : "Unknown Door Access Request"}
+            </Title>
+            <Title
+              style={{
+                fontFamily: "Poppins_600SemiBold",
+                fontSize: 15,
+                color: "#fff",
+              }}
+            >
+              Requested By {item.message}
+            </Title>
+          </Card.Content>
+        </Card>
+      </View>
+    </Swipeout>
   );
 };
 
 const History = () => {
+  const dispatch = useDispatch();
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const getPost = () => {
@@ -90,20 +138,21 @@ const History = () => {
       });
   };
   useEffect(() => {
-    getPost();
+    dispatch(getHistory());
+    setLoading(false);
   }, []);
 
+  const history = useSelector((state) => state.history);
+  console.log(history);
+  const refresh = () => [dispatch(getHistory()), setLoading(false)];
   return (
     <View style={styles.container}>
       <AppBar title={"History"} />
-      {data?.length === 0 || null ? (
+      {history?.length === 0 || history === null ? (
         <ScrollView
           style={{ height: "100%" }}
           refreshControl={
-            <RefreshControl
-              refreshing={isLoading}
-              onRefresh={() => getPost()}
-            />
+            <RefreshControl refreshing={isLoading} onRefresh={refresh} />
           }
         >
           <View style={styles.noNotification}>
@@ -117,8 +166,8 @@ const History = () => {
         </ScrollView>
       ) : (
         <FlatList
-          data={data}
-          keyExtractor={(item) => `${item._id}`}
+          data={history}
+          keyExtractor={(item) => `${item._id.$oid}`}
           renderItem={({ item }) => <ListItem item={item} />}
           onRefresh={() => getPost()}
           refreshing={isLoading}
@@ -145,7 +194,7 @@ const styles = StyleSheet.create({
   },
   noNotificationImage: {
     width: "100%",
-    height: 200,
+    height: 300,
   },
   noHistoryText: {
     margin: 30,
