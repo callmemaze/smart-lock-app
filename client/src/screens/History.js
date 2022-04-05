@@ -17,8 +17,9 @@ import Swipeout from "react-native-swipeout";
 import { useDispatch } from "react-redux";
 import { deleteHistory, getHistory } from "../actions/history";
 import { useSelector } from "react-redux";
+import Navigation from "../navigation/Navigation";
 
-const ListItem = ({ item }) => {
+const ListItem = ({ item, navigation }) => {
   const dispatch = useDispatch();
   const remove = (id) => {
     let url = `http://127.0.0.1:5000/history/${id}`;
@@ -42,7 +43,7 @@ const ListItem = ({ item }) => {
             alignItems: "center",
             height: "100%",
             width: "100%",
-            backgroundColor: "blue",
+            backgroundColor: "#fff",
           }}
           onPress={() => dispatch(deleteHistory(item._id.$oid))}
         >
@@ -58,7 +59,11 @@ const ListItem = ({ item }) => {
     },
   ];
   return (
-    <Swipeout right={swipeBtns} autoClose="true">
+    <Swipeout
+      right={swipeBtns}
+      autoClose="true"
+      style={{ backgroundColor: "#fff" }}
+    >
       <View style={styles.cardContainer} key={item._id.$oid}>
         <Card style={styles.card}>
           <Card.Content
@@ -169,7 +174,7 @@ const History = () => {
           data={history}
           keyExtractor={(item) => `${item._id.$oid}`}
           renderItem={({ item }) => <ListItem item={item} />}
-          onRefresh={() => getPost()}
+          onRefresh={() => refresh()}
           refreshing={isLoading}
           showsVerticalScrollIndicator={false}
         />

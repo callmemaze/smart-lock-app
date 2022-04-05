@@ -9,7 +9,7 @@ import { reducers } from "./src/reducers";
 import { Provider } from "react-redux";
 import { createStore, applyMiddleware, compose } from "redux";
 import thunk from "redux-thunk";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   useFonts,
   Poppins_600SemiBold,
@@ -20,7 +20,11 @@ import {
 import AppLoading from "expo-app-loading";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
-
+import Navigation from "./src/navigation/Navigation";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { Init } from "./src/actions/auth";
+import { ActivityIndicator } from "react-native-paper";
 const Stack = createNativeStackNavigator();
 
 registerForPushNotificationsAsync = async () => {
@@ -37,7 +41,6 @@ registerForPushNotificationsAsync = async () => {
       return;
     }
     const token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log(token);
   } else {
     alert("Must use physical device for Push Notifications");
   }
@@ -54,10 +57,54 @@ registerForPushNotificationsAsync = async () => {
 
 const store = createStore(reducers, compose(applyMiddleware(thunk)));
 
+const RootNavigation = () => {
+  const token = useSelector((state) => state.auth.authToken);
+
+  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const init = async () => {
+    await dispatch(Init());
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+  return (
+    <NavigationContainer>
+      <StatusBar barStyle="dark-content" animated={true} />
+      <Stack.Navigator
+        screenOptions={{ headerShown: false, gestureEnabled: false }}
+      >
+        {token ? (
+          <>
+            <Stack.Screen name="BottomTab" component={BottomTab} />
+            <Stack.Group
+              screenOptions={{ presentation: "modal", gestureEnabled: true }}
+            >
+              <Stack.Screen name="Navigation" component={Navigation} />
+            </Stack.Group>
+          </>
+        ) : (
+          <Stack.Screen name="authNavigation" component={AuthNavigation} />
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+
 export default function App() {
   useEffect(() => {
     registerForPushNotificationsAsync();
-  });
+  }, []);
 
   let [fontsLoaded] = useFonts({
     Poppins_400Regular,
@@ -68,16 +115,9 @@ export default function App() {
   if (!fontsLoaded) {
     return <AppLoading />;
   }
-
   return (
     <Provider store={store}>
-      <NavigationContainer>
-        <StatusBar barStyle="dark-content" animated={true} />
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="AuthNavigation" component={AuthNavigation} />
-          <Stack.Screen name="BottomTab" component={BottomTab} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <RootNavigation />
     </Provider>
   );
 }

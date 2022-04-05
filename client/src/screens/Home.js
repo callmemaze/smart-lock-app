@@ -1,12 +1,14 @@
-import React, { useEffect } from "react";
-import { StyleSheet, Text, View, Image } from "react-native";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, Text, View, Image, Modal } from "react-native";
 import { Appbar, Card } from "react-native-paper";
 import { Icon } from "react-native-elements";
 import socketIOClient from "socket.io-client";
 import io from "socket.io-client";
+import { TouchableOpacity } from "react-native-gesture-handler";
 const ENDPOINT = "http://127.0.0.1:5001";
 
-const Home = () => {
+const Home = ({ navigation }) => {
+  const [modalVisible, setModalVisible] = useState(false);
   const handleSubmitDoor = () => {
     fetch("http://127.0.0.1:5000/unlock", {
       method: "POST",
@@ -63,8 +65,13 @@ const Home = () => {
           </Text>
         </View>
         <View style={styles.boxContainer}>
-          <Card style={styles.box} onPress={() => console.log("pressed")}>
-            <View style={styles.content}>
+          <Card
+            style={styles.box}
+            onPress={() => {
+              navigation.navigate("Navigation", { screen: "QR" });
+            }}
+          >
+            <TouchableOpacity style={styles.content}>
               <Icon
                 name="qrcode"
                 type="font-awesome-5"
@@ -75,7 +82,7 @@ const Home = () => {
                 {" "}
                 Show Qr Code{" "}
               </Text>
-            </View>
+            </TouchableOpacity>
           </Card>
           <Card style={styles.box}>
             <View style={styles.content}>
@@ -145,5 +152,46 @@ const styles = StyleSheet.create({
     width: "100%",
     alignItems: "center",
     justifyContent: "space-evenly",
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    backgroundColor: "white",
+    borderRadius: 20,
+
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+  },
+  buttonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center",
   },
 });

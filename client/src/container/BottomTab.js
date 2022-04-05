@@ -15,6 +15,7 @@ import {
 } from "@expo/vector-icons";
 import { useRef } from "react";
 import "react-native-gesture-handler";
+import Navigation from "../navigation/Navigation";
 const Tab = createBottomTabNavigator();
 
 function getWidth() {

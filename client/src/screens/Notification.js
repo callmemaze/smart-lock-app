@@ -13,6 +13,9 @@ import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Card, Title, Paragraph } from "react-native-paper";
 import AppBar from "../components/AppBar";
 import { Icon } from "react-native-elements";
+import { getAlert } from "../actions/alert";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 const ListItem = ({ item }) => {
   const handleSubmitAccess = () => {
@@ -110,6 +113,7 @@ const ListItem = ({ item }) => {
 };
 
 const Notification = () => {
+  const dispatch = useDispatch();
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState();
 
@@ -146,8 +150,12 @@ const Notification = () => {
       });
   };
   useEffect(() => {
-    getPost();
+    dispatch(getAlert());
+    setLoading(false);
   }, []);
+  const alert = useSelector((state) => state.history);
+  console.log(alert);
+  const refresh = () => [dispatch(getAlert()), setLoading(false)];
   return (
     <View style={styles.container}>
       <AppBar title={"Notification"} />
@@ -164,7 +172,7 @@ const Notification = () => {
           refreshControl={
             <RefreshControl
               refreshing={isLoading}
-              onRefresh={() => getPost()}
+              onRefresh={() => refresh()}
             />
           }
         >
@@ -182,7 +190,7 @@ const Notification = () => {
           data={data}
           keyExtractor={(item) => `${item.id}`}
           renderItem={({ item }) => <ListItem item={item} />}
-          onRefresh={() => getPost()}
+          onRefresh={() => refresh()}
           refreshing={isLoading}
           showsVerticalScrollIndicator={false}
         />

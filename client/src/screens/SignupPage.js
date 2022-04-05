@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Alert } from "react-native";
 import { Appbar } from "react-native-paper";
 import {
   useFonts,
@@ -9,9 +9,12 @@ import {
 import * as Font from "expo-font";
 import { TextInput } from "react-native-paper";
 import { Button } from "react-native-paper";
-
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { useDispatch } from "react-redux";
 const SignupPage = ({ navigation }) => {
-  const initialState = { username: "", email: "", password: "" };
+  const dispatch = useDispatch();
+  const initialState = { name: "", email: "", password: "" };
   const [formData, setData] = useState(initialState);
   const handleChangeEmail = (e) => {
     setData({
@@ -28,11 +31,20 @@ const SignupPage = ({ navigation }) => {
   const handleChangeUsername = (e) => {
     setData({
       ...formData,
-      username: e,
+      name: e,
     });
   };
   const handleSubmit = () => {
-    navigation.navigate("BottomTab");
+    axios
+      .post("http://127.0.0.1:5000/register", formData)
+      .then((res) => {
+        dispatch({ type: AUTH, data: res.data });
+        dispatch({ type: TOKEN, data: res.data.email });
+      })
+      .catch((error) => {
+        console.log(error.response.data.message);
+        Alert.alert(`${error.response.data.message}`);
+      });
   };
   const fetchFonts = async () =>
     await Font.loadAsync({
@@ -56,7 +68,7 @@ const SignupPage = ({ navigation }) => {
         <View style={styles.textContainer}>
           <Text
             style={{
-              fontFamily: "Poppins_600",
+              fontFamily: "Poppins_600SemiBold",
               fontSize: 40,
               color: "#111",
             }}
@@ -66,7 +78,7 @@ const SignupPage = ({ navigation }) => {
           </Text>
           <Text
             style={{
-              fontFamily: "Poppins_600",
+              fontFamily: "Poppins_600SemiBold",
               fontSize: 40,
               color: "#111",
             }}
@@ -79,7 +91,7 @@ const SignupPage = ({ navigation }) => {
           <View>
             <Text
               style={{
-                fontFamily: "Poppins_400",
+                fontFamily: "Poppins_400Regular",
                 color: "#111",
               }}
             >
@@ -98,7 +110,7 @@ const SignupPage = ({ navigation }) => {
           <View>
             <Text
               style={{
-                fontFamily: "Poppins_400",
+                fontFamily: "Poppins_400Regular",
                 color: "#111",
               }}
             >
@@ -117,7 +129,7 @@ const SignupPage = ({ navigation }) => {
           <View>
             <Text
               style={{
-                fontFamily: "Poppins_400",
+                fontFamily: "Poppins_400Regular",
                 color: "#111",
               }}
             >
@@ -143,7 +155,7 @@ const SignupPage = ({ navigation }) => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontFamily: "Poppins_600",
+              fontFamily: "Poppins_600SemiBold",
               fontSize: 15,
               color: "#fff",
               backgroundColor: "#FF7A00",
@@ -166,7 +178,7 @@ const SignupPage = ({ navigation }) => {
           >
             <Text
               style={{
-                fontFamily: "Poppins_600",
+                fontFamily: "Poppins_600SemiBold",
                 fontSize: 15,
                 color: "#111",
               }}
@@ -180,7 +192,7 @@ const SignupPage = ({ navigation }) => {
               onPress={() => navigation.navigate("Login")}
               color="#FF7A00"
               style={{
-                fontFamily: "Poppins_600",
+                fontFamily: "Poppins_600SemiBold",
               }}
             >
               Log In

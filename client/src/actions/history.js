@@ -10,15 +10,6 @@ export const getHistory = () => async (dispatch) => {
   }
 };
 
-export const getAlert = () => async (dispatch) => {
-  try {
-    const { data } = await api.fetchNotification();
-    dispatch({ type: FETCH_ALL, payload: data });
-  } catch (error) {
-    console.log(error.message);
-  }
-};
-
 export const deleteHistory = (id) => async (dispatch) => {
   try {
     await api.deletePost(id);

@@ -5,21 +5,27 @@ import {
   Text,
   View,
   Platform,
+  Alert,
   TouchableOpacity,
 } from "react-native";
+import { AUTH, TOKEN } from "../constant/type";
 import AppLoading from "expo-app-loading";
 import { Appbar } from "react-native-paper";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   useFonts,
   Poppins_600SemiBold,
   Poppins_400Regular,
   Poppins_900Black,
 } from "@expo-google-fonts/poppins";
-import * as Font from "expo-font";
+import { useSelector } from "react-redux";
 import { TextInput } from "react-native-paper";
 import { Button } from "react-native-paper";
-
+import axios from "axios";
+import { useDispatch } from "react-redux";
 const Login = ({ navigation }) => {
+  const dispatch = useDispatch();
+
   let [fontsLoaded] = useFonts({
     Poppins_400Regular,
     Poppins_600SemiBold,
@@ -42,7 +48,15 @@ const Login = ({ navigation }) => {
   };
 
   const handleSubmit = () => {
-    navigation.navigate("BottomTab");
+    axios
+      .post("http://192.168.1.86:5000/login", formData)
+      .then((res) => {
+        dispatch({ type: AUTH, data: res.data });
+        dispatch({ type: TOKEN, data: res.data.email });
+      })
+      .catch((error) => {
+        Alert.alert(`${error.response.data.message}`);
+      });
   };
   if (!fontsLoaded) {
     return <AppLoading />;
