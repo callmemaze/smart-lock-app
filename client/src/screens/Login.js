@@ -11,14 +11,12 @@ import {
 import { AUTH, TOKEN } from "../constant/type";
 import AppLoading from "expo-app-loading";
 import { Appbar } from "react-native-paper";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   useFonts,
   Poppins_600SemiBold,
   Poppins_400Regular,
   Poppins_900Black,
 } from "@expo-google-fonts/poppins";
-import { useSelector } from "react-redux";
 import { TextInput } from "react-native-paper";
 import { Button } from "react-native-paper";
 import axios from "axios";
@@ -33,6 +31,7 @@ const Login = ({ navigation }) => {
   });
 
   const initialState = { email: "", password: "" };
+  const [secureTextEntry, setSecureTextEntry] = useState(true);
   const [formData, setData] = useState(initialState);
   const handleChangeEmail = (e) => {
     setData({
@@ -49,7 +48,7 @@ const Login = ({ navigation }) => {
 
   const handleSubmit = () => {
     axios
-      .post("http://192.168.1.86:5000/login", formData)
+      .post("http://127.0.0.1:5000/login", formData)
       .then((res) => {
         dispatch({ type: AUTH, data: res.data });
         dispatch({ type: TOKEN, data: res.data.email });
@@ -102,6 +101,7 @@ const Login = ({ navigation }) => {
             <TextInput
               label="Email"
               type="flat"
+              autoCapitalize="none"
               value={formData.email}
               outlineColor="#fff"
               onChangeText={(text) => {
@@ -121,10 +121,35 @@ const Login = ({ navigation }) => {
             <TextInput
               label="Password"
               type="flat"
+              autoCapitalize="none"
+              secureTextEntry={secureTextEntry}
               value={formData.password}
               onChangeText={(text) => {
                 handleChangePassword(text);
               }}
+              right={
+                secureTextEntry ? (
+                  <TextInput.Icon
+                    name="eye-off"
+                    size={24}
+                    color="black"
+                    onPress={() => {
+                      setSecureTextEntry(!secureTextEntry);
+                      return false;
+                    }}
+                  />
+                ) : (
+                  <TextInput.Icon
+                    name="eye"
+                    size={24}
+                    color="black"
+                    onPress={() => {
+                      setSecureTextEntry(!secureTextEntry);
+                      return false;
+                    }}
+                  />
+                )
+              }
             />
           </View>
         </KeyboardAvoidingView>

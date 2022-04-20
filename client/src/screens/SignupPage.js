@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View, Alert } from "react-native";
 import { Appbar } from "react-native-paper";
+
 import {
   useFonts,
   Poppins_600SemiBold,
@@ -9,12 +10,13 @@ import {
 import * as Font from "expo-font";
 import { TextInput } from "react-native-paper";
 import { Button } from "react-native-paper";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { useDispatch } from "react-redux";
+
 const SignupPage = ({ navigation }) => {
   const dispatch = useDispatch();
   const initialState = { name: "", email: "", password: "" };
+  const [secureTextEntry, setSecureTextEntry] = useState(true);
   const [formData, setData] = useState(initialState);
   const handleChangeEmail = (e) => {
     setData({
@@ -119,6 +121,7 @@ const SignupPage = ({ navigation }) => {
             <TextInput
               label="Email"
               type="flat"
+              autoCapitalize="none"
               value={formData.email}
               outlineColor="#fff"
               onChangeText={(text) => {
@@ -138,10 +141,35 @@ const SignupPage = ({ navigation }) => {
             <TextInput
               label="Password"
               type="flat"
+              secureTextEntry={secureTextEntry}
+              autoCapitalize="none"
               value={formData.password}
               onChangeText={(text) => {
                 handleChangePassword(text);
               }}
+              right={
+                secureTextEntry ? (
+                  <TextInput.Icon
+                    name="eye-off"
+                    size={24}
+                    color="black"
+                    onPress={() => {
+                      setSecureTextEntry(!secureTextEntry);
+                      return false;
+                    }}
+                  />
+                ) : (
+                  <TextInput.Icon
+                    name="eye"
+                    size={24}
+                    color="black"
+                    onPress={() => {
+                      setSecureTextEntry(!secureTextEntry);
+                      return false;
+                    }}
+                  />
+                )
+              }
             />
           </View>
         </View>

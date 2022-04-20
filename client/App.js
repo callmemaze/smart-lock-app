@@ -9,7 +9,6 @@ import { reducers } from "./src/reducers";
 import { Provider } from "react-redux";
 import { createStore, applyMiddleware, compose } from "redux";
 import thunk from "redux-thunk";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   useFonts,
   Poppins_600SemiBold,
@@ -66,7 +65,7 @@ const RootNavigation = () => {
     await dispatch(Init());
     setLoading(false);
   };
-
+  console.log("token", token);
   useEffect(() => {
     init();
   }, []);

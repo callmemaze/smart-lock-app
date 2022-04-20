@@ -12,28 +12,13 @@ import {
 import { Card, Title, Paragraph } from "react-native-paper";
 import AppBar from "../components/AppBar";
 import { Icon } from "react-native-elements";
-import Swipeable from "react-native-gesture-handler/Swipeable";
 import Swipeout from "react-native-swipeout";
 import { useDispatch } from "react-redux";
 import { deleteHistory, getHistory } from "../actions/history";
 import { useSelector } from "react-redux";
-import Navigation from "../navigation/Navigation";
 
 const ListItem = ({ item, navigation }) => {
   const dispatch = useDispatch();
-  const remove = (id) => {
-    let url = `http://127.0.0.1:5000/history/${id}`;
-    fetch(url, {
-      method: "DELETE",
-    })
-      .then((res) => res.json())
-      .then((alerts) => {
-        console.log(alerts);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
   let swipeBtns = [
     {
       component: (

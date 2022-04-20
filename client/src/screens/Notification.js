@@ -9,107 +9,108 @@ import {
   RefreshControl,
   TouchableOpacity,
 } from "react-native";
-import Swipeable from "react-native-gesture-handler/Swipeable";
 import { Card, Title, Paragraph } from "react-native-paper";
 import AppBar from "../components/AppBar";
 import { Icon } from "react-native-elements";
 import { getAlert } from "../actions/alert";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
-
+import Swipeout from "react-native-swipeout";
 const ListItem = ({ item }) => {
-  const handleSubmitAccess = () => {
-    console.log("pressed");
-  };
-  const closeRow = (index) => {
-    console.log("closerow");
-    if (prevOpenedRow && prevOpenedRow !== row[index]) {
-      prevOpenedRow.close();
-    }
-    prevOpenedRow = row[index];
-  };
-
-  const renderRightActions = (progress, dragX, onClick) => {
-    return (
-      <View
-        style={{
-          margin: 0,
-          alignContent: "center",
-          justifyContent: "center",
-          width: 70,
-        }}
-      >
-        <Button color="red" onPress={onClick} title="DELETE"></Button>
-      </View>
-    );
-  };
-  <Swipeable
-    renderRightActions={(progress, dragX) =>
-      renderRightActions(progress, dragX, onClick)
-    }
-    onSwipeableOpen={() => closeRow(index)}
-    ref={(ref) => (row[index] = ref)}
-    rightOpenValue={-100}
-  >
-    <View style={styles.cardContainer} key={item._id.$oid}>
-      <Card style={styles.card}>
-        <Card.Content
+  const dispatch = useDispatch();
+  let swipeBtns = [
+    {
+      component: (
+        <TouchableOpacity
           style={{
-            backgroundColor: "#318dff",
-            borderTopLeftRadius: 25,
-            borderTopRightRadius: 25,
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+            width: "100%",
+            backgroundColor: "#fff",
           }}
+          onPress={() => dispatch(deleteHistory(item._id.$oid))}
         >
-          <Paragraph style={{ fontFamily: "Poppins_600SemiBold" }}>
-            Door Access Request
-          </Paragraph>
-          <View
+          <Icon
+            name="trash-can-outline"
+            type="material-community"
+            color="red"
+            size={35}
+          />
+        </TouchableOpacity>
+      ),
+      backgroundColor: "transparent",
+    },
+  ];
+
+  return (
+    <Swipeout
+      right={swipeBtns}
+      autoClose="true"
+      style={{ backgroundColor: "#fff" }}
+    >
+      <View style={styles.cardContainer} key={item._id.$oid}>
+        <Card style={styles.card}>
+          <Card.Content
             style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
+              backgroundColor: "#318dff",
+              borderTopLeftRadius: 25,
+              borderTopRightRadius: 25,
             }}
           >
-            <Icon
-              name="clock-time-three"
-              type="material-community"
-              color="#fff"
-            />
-            <Title
+            <Paragraph style={{ fontFamily: "Poppins_600SemiBold" }}>
+              {item.status === "accepted"
+                ? "Door Access Request"
+                : "Unknown Door Access Request"}
+            </Paragraph>
+            <View
               style={{
-                fontFamily: "Poppins_600SemiBold",
-                marginLeft: 7,
-                color: "#fff",
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
               }}
             >
-              12 P.M 2022
-            </Title>
-          </View>
-        </Card.Content>
-        <Card.Cover
-          style={{ margin: 10, height: 200, borderRadius: 10 }}
-          source={{ uri: "https://picsum.photos/700" }}
-        />
-        <Card.Actions
-          style={{
-            justifyContent: "space-around",
-            alignItems: "center",
+              <Icon
+                name="clock-time-three"
+                type="material-community"
+                color="#fff"
+              />
+              <Title
+                style={{
+                  fontFamily: "Poppins_600SemiBold",
+                  marginLeft: 7,
+                  color: "#fff",
+                }}
+              >
+                {item.date}
+              </Title>
+            </View>
+          </Card.Content>
+          <Card.Cover
+            style={{ margin: 10, height: 200, borderRadius: 10 }}
+            source={{ uri: `data:image/png;base64,${item.face}` }}
+          />
+          <Card.Actions
+            style={{
+              justifyContent: "space-around",
+              alignItems: "center",
 
-            backgroundColor: "#318dff",
-            borderBottomLeftRadius: 25,
-            borderBottomRightRadius: 25,
-          }}
-        >
-          <TouchableOpacity style={{ margin: 5 }} onPress={handleSubmitAccess}>
-            <Text style={styles.text}>Access</Text>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={styles.text}>Cancel</Text>
-          </TouchableOpacity>
-        </Card.Actions>
-      </Card>
-    </View>
-  </Swipeable>;
+              backgroundColor: "#318dff",
+              borderBottomLeftRadius: 25,
+              borderBottomRightRadius: 25,
+            }}
+          >
+            <TouchableOpacity style={{ margin: 5 }}>
+              <Text style={styles.text}>Access</Text>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Text style={styles.text}>Cancel</Text>
+            </TouchableOpacity>
+          </Card.Actions>
+        </Card>
+      </View>
+    </Swipeout>
+  );
 };
 
 const Notification = () => {
@@ -153,8 +154,7 @@ const Notification = () => {
     dispatch(getAlert());
     setLoading(false);
   }, []);
-  const alert = useSelector((state) => state.history);
-  console.log(alert);
+  const alert = useSelector((state) => state.alert);
   const refresh = () => [dispatch(getAlert()), setLoading(false)];
   return (
     <View style={styles.container}>
@@ -166,7 +166,7 @@ const Notification = () => {
         ></Image> 
       </View>*/}
 
-      {data?.length === 0 || !data ? (
+      {alert?.length === 0 || !alert ? (
         <ScrollView
           style={{ height: "100%" }}
           refreshControl={
@@ -187,8 +187,8 @@ const Notification = () => {
         </ScrollView>
       ) : (
         <FlatList
-          data={data}
-          keyExtractor={(item) => `${item.id}`}
+          data={alert}
+          keyExtractor={(item) => `${item._id.$oid}`}
           renderItem={({ item }) => <ListItem item={item} />}
           onRefresh={() => refresh()}
           refreshing={isLoading}

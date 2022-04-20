@@ -3,25 +3,12 @@ import { StyleSheet, Text, View, Image, Modal } from "react-native";
 import { Appbar, Card } from "react-native-paper";
 import { Icon } from "react-native-elements";
 import socketIOClient from "socket.io-client";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import io from "socket.io-client";
 import { TouchableOpacity } from "react-native-gesture-handler";
 const ENDPOINT = "http://127.0.0.1:5001";
 
 const Home = ({ navigation }) => {
-  const [modalVisible, setModalVisible] = useState(false);
-  const handleSubmitDoor = () => {
-    fetch("http://127.0.0.1:5000/unlock", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        openDoor: true,
-        user: "test",
-      }),
-    });
-  };
   const click = async () => {
     const socket = socketIOClient(ENDPOINT);
     socket.connect();
@@ -29,6 +16,15 @@ const Home = ({ navigation }) => {
     socket.send("message", data);
     socket.close();
   };
+  const [user, setUser] = useState();
+  const getData = async () => {
+    const jsonValue = await AsyncStorage.getItem("user");
+    setUser(JSON.parse(jsonValue));
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
   return (
     <View style={styles.container}>
       <Appbar.Header
@@ -61,7 +57,7 @@ const Home = ({ navigation }) => {
             Welcome
           </Text>
           <Text style={{ fontFamily: "Poppins_600SemiBold", fontSize: 30 }}>
-            User
+            {user ? user.name.split(" ")[0] : ""}
           </Text>
         </View>
         <View style={styles.boxContainer}>
@@ -75,10 +71,16 @@ const Home = ({ navigation }) => {
               <Icon
                 name="qrcode"
                 type="font-awesome-5"
-                color="#517fa4"
+                color="#fff"
                 size={40}
               />
-              <Text style={{ fontFamily: "Poppins_600SemiBold", fontSize: 18 }}>
+              <Text
+                style={{
+                  fontFamily: "Poppins_600SemiBold",
+                  fontSize: 18,
+                  color: "white",
+                }}
+              >
                 {" "}
                 Show Qr Code{" "}
               </Text>
@@ -89,10 +91,16 @@ const Home = ({ navigation }) => {
               <Icon
                 name="door-closed"
                 type="font-awesome-5"
-                color="#517fa4"
+                color="#fff"
                 size={40}
               />
-              <Text style={{ fontFamily: "Poppins_600SemiBold", fontSize: 18 }}>
+              <Text
+                style={{
+                  fontFamily: "Poppins_600SemiBold",
+                  fontSize: 18,
+                  color: "#fff",
+                }}
+              >
                 {" "}
                 Open Door
               </Text>
@@ -103,10 +111,16 @@ const Home = ({ navigation }) => {
               <Icon
                 name="door-closed"
                 type="font-awesome-5"
-                color="#517fa4"
+                color="#fff"
                 size={40}
               />
-              <Text style={{ fontFamily: "Poppins_600SemiBold", fontSize: 18 }}>
+              <Text
+                style={{
+                  fontFamily: "Poppins_600SemiBold",
+                  fontSize: 18,
+                  color: "#fff",
+                }}
+              >
                 {" "}
                 Open Door
               </Text>
